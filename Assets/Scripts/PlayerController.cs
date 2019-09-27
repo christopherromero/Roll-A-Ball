@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private int count;
     public Text coinText;
+    public Text objectiveText;
     public Text winText;
     private int currentLevel = 0;
     GameObject[] jumppads;
@@ -19,13 +20,14 @@ public class PlayerController : MonoBehaviour
         speed = 13;
         count = 0;
         winText.text = "";
+        Invoke("ShowObjective", 0.0f);
+        Invoke("HideObjective", 10.0f);
         SetCoinText();
         jumppads = GameObject.FindGameObjectsWithTag("JumpPad");
         foreach (var j in jumppads)
         {
             j.SetActive(false);
         }
-        // jumpForce = 20;
     }
     // Update is called once per frame
     void FixedUpdate()
@@ -46,6 +48,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void ShowObjective()
+    {
+        objectiveText.text = "Collect 100 coins to win";
+        objectiveText.gameObject.SetActive(true);
+    }
+    private void HideObjective()
+    {
+        objectiveText.gameObject.SetActive(false);
+    }
     void SetCoinText()
     {
         coinText.text = "Coins: " + count.ToString();
