@@ -13,15 +13,18 @@ public class PlayerController : MonoBehaviour
     public Text winText;
     private int currentLevel = 0;
     GameObject[] jumppads;
-    // public int jumpForce;
+    string objectiveMessage;
+    public float threshold;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         speed = 13;
         count = 0;
         winText.text = "";
-        Invoke("ShowObjective", 0.0f);
-        Invoke("HideObjective", 10.0f);
+        objectiveMessage = "Collect 100 coins to win!";
+        threshold = 0;
+        ToggleObjective(objectiveMessage);
         SetCoinText();
         jumppads = GameObject.FindGameObjectsWithTag("JumpPad");
         foreach (var j in jumppads)
@@ -36,6 +39,11 @@ public class PlayerController : MonoBehaviour
         float moveVertical = Input.GetAxis("Vertical");
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
         rb.AddForce(movement * speed);
+        if (transform.position.y < threshold)
+        {
+            transform.position = new Vector3(0, 0, 0);
+            rb.AddForce(new Vector3(0, 0, 0));
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -48,19 +56,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void ToggleObjective(string message)
+    {
+        objectiveText.text = message;
+        Invoke("ShowObjective", 0.0f);
+        Invoke("HideObjective", 7.0f);
+    }
+
     void ShowObjective()
     {
-        objectiveText.text = "Collect 100 coins to win";
         objectiveText.gameObject.SetActive(true);
     }
+
     private void HideObjective()
     {
         objectiveText.gameObject.SetActive(false);
     }
+
     void SetCoinText()
     {
         coinText.text = "Coins: " + count.ToString();
-        if (count == 22 || count == 58)
+        if (count == 22 || count == 85)
         {
 
             if (jumppads.Length > 0)
@@ -68,8 +84,13 @@ public class PlayerController : MonoBehaviour
                 jumppads[1 - currentLevel].SetActive(true);
             }
             currentLevel++;
+            if (count == 22)
+            {
+                objectiveMessage = "Use the Jump Pads to continue to the next area";
+                ToggleObjective(objectiveMessage);
+            }
         }
-        if (count >= 80)
+        if (count >= 100)
         {
             winText.text = "You Win!";
         }
